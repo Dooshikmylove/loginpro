@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #000; /* Fondo negro */
+            color: #fff; /* Texto blanco */
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .welcome-container {
+            text-align: center;
+            background: #121212; /* Negro suave */
+            border-radius: 12px;
+            padding: 30px;
+            width: 400px;
+            box-shadow: 0 6px 12px rgba(0, 212, 255, 0.5); /* Sombra azul eléctrico */
+        }
+
+        h1 {
+            color: #00d4ff; /* Azul eléctrico */
+            margin-bottom: 20px;
+        }
+
+        p {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #00d4ff; /* Azul eléctrico */
+            border: none;
+            border-radius: 8px;
+            color: #000; /* Texto negro */
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #00a6cc; /* Azul eléctrico más oscuro */
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-container">
+        <h1>¡Bienvenido!</h1>
+        <p id="user-name">Cargando...</p>
+        <p id="user-email"></p>
+        <button id="logout-btn">Cerrar sesión</button>
+    </div>
+
+    <!-- Firebase -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js"></script>
+
+    <!-- Script de funcionalidad -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js';
+
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDJPeYB1er4fZV2eQ-8Npk04_3DMoPcUvs",
+            authDomain: "inicio-de-sesion-f29f7.firebaseapp.com",
+            projectId: "inicio-de-sesion-f29f7",
+            storageBucket: "inicio-de-sesion-f29f7.firebasestorage.app",
+            messagingSenderId: "403408827390",
+            appId: "1:403408827390:web:6a520dec7f6d2349e986af",
+            measurementId: "G-KE75FHQ4JE"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const userName = document.getElementById('user-name');
+        const userEmail = document.getElementById('user-email');
+        const logoutButton = document.getElementById('logout-btn');
+
+        // Verificar usuario autenticado
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                if (user.displayName) {
+                    userName.textContent = `Hola, ${user.displayName}!`;
+                } else if (user.phoneNumber) {
+                    userName.textContent = `Hola, ${user.phoneNumber}!`;
+                } else {
+                    userName.textContent = 'Hola!';
+                }
+
+                userEmail.textContent = user.email ? `Correo: ${user.email}` : '';
+            } else {
+                // Redirigir a la pantalla de inicio de sesión si no hay usuario autenticado
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Cerrar sesión
+        logoutButton.addEventListener('click', () => {
+            signOut(auth)
+                .then(() => {
+                    alert('Sesión cerrada exitosamente.');
+                    window.location.href = 'index.html'; // Redirigir a la pantalla de inicio de sesión
+                })
+                .catch((error) => {
+                    console.error('Error al cerrar sesión:', error.message);
+                });
+        });
+    </script>
+</body>
+</html>
