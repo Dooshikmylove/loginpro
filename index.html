@@ -1,84 +1,116 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Autenticación Firebase</title>
-    <!-- Firebase -->
-    <script type="module" src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js"></script>
-    <!-- Bootstrap -->
+    <meta charset="UTF-8"> <!-- Configuración de codificación de caracteres (UTF-8) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Hace que el diseño sea responsivo -->
+    <title>Autenticación Firebase</title> <!-- Título de la página -->
+
+    <!-- Importar Firebase App y Firebase Auth -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js"></script> <!-- Biblioteca principal de Firebase -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js"></script> <!-- Biblioteca para la autenticación -->
+
+    <!-- Importar Bootstrap para estilos -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
+    <!-- Importar Font Awesome para íconos -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
     <style>
+        /* Estilo general del cuerpo */
         body {
-            font-family: 'Roboto', sans-serif;
-            background: #000;
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
+            font-family: 'Roboto', sans-serif; /* Fuente Roboto */
+            background: #000; /* Fondo negro */
+            color: #fff; /* Texto blanco */
+            display: flex; /* Diseño flexbox */
+            flex-direction: column; /* Colocar elementos en columna */
+            align-items: center; /* Centrar horizontalmente */
+            justify-content: center; /* Centrar verticalmente */
+            height: 100vh; /* Altura completa de la ventana */
+            margin: 0; /* Sin margen */
         }
+
         h1 {
-            color: #00d4ff;
+            color: #00d4ff; /* Color azul eléctrico */
         }
+
         .container {
-            background: #121212;
-            border-radius: 12px;
-            padding: 20px;
-            width: 350px;
-            box-shadow: 0 6px 12px rgba(0, 212, 255, 0.5);
+            background: #121212; /* Fondo gris oscuro */
+            border-radius: 12px; /* Bordes redondeados */
+            padding: 20px; /* Espaciado interno */
+            width: 350px; /* Ancho fijo */
+            box-shadow: 0 6px 12px rgba(0, 212, 255, 0.5); /* Sombra azul */
         }
+
         .input-group {
-            margin-bottom: 15px;
+            margin-bottom: 15px; /* Espacio entre los campos */
         }
+
         button {
-            width: 100%;
+            width: 100%; /* Botones con ancho completo */
             margin-top: 10px;
-            background-color: #00d4ff;
-            color: #000;
-            border: none;
-            border-radius: 8px;
+            background-color: #00d4ff; /* Fondo azul eléctrico */
+            color: #000; /* Texto negro */
+            border: none; /* Sin bordes */
+            border-radius: 8px; /* Bordes redondeados */
             padding: 10px;
         }
+
         button:hover {
-            background-color: #00a6cc;
+            background-color: #00a6cc; /* Cambiar color al pasar el cursor */
         }
+
         #recaptcha-container {
-            margin: 15px 0;
+            margin: 15px 0; /* Espaciado superior e inferior */
         }
     </style>
 </head>
 <body>
+    <!-- Encabezado principal -->
     <h1>Autenticación con Firebase</h1>
+
+    <!-- Contenedor principal -->
     <div class="container">
+        <!-- Subtítulo -->
         <h2>Inicio de Sesión</h2>
-        <!-- Formulario de correo y contraseña -->
+
+        <!-- Campo para correo -->
         <div class="input-group">
-            <label for="email">Correo:</label>
-            <input type="email" id="email" class="form-control" placeholder="Correo">
+            <label for="email">Correo:</label> <!-- Etiqueta para el campo de correo -->
+            <input type="email" id="email" class="form-control" placeholder="Correo"> <!-- Entrada de correo -->
         </div>
+
+        <!-- Campo para contraseña -->
         <div class="input-group">
-            <label for="password">Contraseña:</label>
-            <input type="password" id="password" class="form-control" placeholder="Contraseña">
+            <label for="password">Contraseña:</label> <!-- Etiqueta para contraseña -->
+            <input type="password" id="password" class="form-control" placeholder="Contraseña"> <!-- Entrada de contraseña -->
         </div>
+
+        <!-- Botón para iniciar sesión con correo y contraseña -->
         <button id="login-email">Iniciar Sesión</button>
-        <a href="register.html"><button>Registrar Usuario </button></a>
+
+        <!-- Botón para ir a la página de registro -->
+        <a href="register.html"><button>Registrar Usuario</button></a>
+
+        <!-- Botón para iniciar sesión con Google -->
         <button id="google-login">Iniciar con Google</button>
+
+        <!-- Subtítulo para registro con teléfono -->
         <h2>Registro con Teléfono</h2>
+
+        <!-- Contenedor para reCAPTCHA -->
         <div id="recaptcha-container"></div>
+
+        <!-- Campo para número de teléfono -->
         <div class="input-group">
             <label for="phone-number">Número de Teléfono:</label>
-            <input type="text" id="phone-number" class="form-control" placeholder="+52 123 456 7890">
+            <input type="text" id="phone-number" class="form-control" placeholder="+52 123 456 7890"> <!-- Entrada para teléfono -->
         </div>
+
+        <!-- Botón para registro con teléfono -->
         <button id="phone-register">Registrar Número</button>
     </div>
 
     <script type="module">
+        // Importar funciones de Firebase
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js';
         import { 
             getAuth, 
@@ -91,57 +123,57 @@
 
         // Configuración de Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyDJPeYB1er4fZV2eQ-8Npk04_3DMoPcUvs",
-            authDomain: "inicio-de-sesion-f29f7.firebaseapp.com",
-            projectId: "inicio-de-sesion-f29f7",
-            storageBucket: "inicio-de-sesion-f29f7.appspot.com",
-            messagingSenderId: "403408827390",
-            appId: "1:403408827390:web:6a520dec7f6d2349e986af",
-            measurementId: "G-KE75FHQ4JE"
+            apiKey: "AIzaSyDJPeYB1er4fZV2eQ-8Npk04_3DMoPcUvs", // Clave de la API
+            authDomain: "inicio-de-sesion-f29f7.firebaseapp.com", // Dominio de autenticación
+            projectId: "inicio-de-sesion-f29f7", // ID del proyecto
+            storageBucket: "inicio-de-sesion-f29f7.appspot.com", // Almacenamiento
+            messagingSenderId: "403408827390", // ID del remitente de mensajes
+            appId: "1:403408827390:web:6a520dec7f6d2349e986af", // ID de la aplicación
+            measurementId: "G-KE75FHQ4JE" // ID de medición
         };
 
         // Inicializar Firebase
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const googleProvider = new GoogleAuthProvider();
+        const auth = getAuth(app); // Obtener instancia de autenticación
+        const googleProvider = new GoogleAuthProvider(); // Configuración de Google
 
-        // reCAPTCHA para teléfono
+        // Configurar reCAPTCHA para autenticación con teléfono
         window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
             size: 'normal',
-            callback: () => console.log('ReCaptcha verificado'),
-            'expired-callback': () => alert('ReCaptcha expiró, inténtalo de nuevo.')
+            callback: () => console.log('ReCaptcha verificado'), // Callback si es exitoso
+            'expired-callback': () => alert('ReCaptcha expiró, inténtalo de nuevo.') // Callback si expira
         }, auth);
 
-        // Inicio de sesión con correo
+        // Manejar inicio de sesión con correo y contraseña
         document.getElementById('login-email').addEventListener('click', () => {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
             signInWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
-                    const user = userCredential.user;
-                    alert(`Bienvenido, ${user.email}`);
-                    window.location.href = `welcome.html?name=${user.email}`;
+                    const user = userCredential.user; // Obtener usuario
+                    alert(`Bienvenido, ${user.email}`); // Mostrar mensaje de bienvenida
+                    window.location.href = `welcome.html?name=${user.email}`; // Redirigir a página de bienvenida
                 })
                 .catch((error) => {
-                    alert(`Error al iniciar sesión: ${error.message}`);
+                    alert(`Error al iniciar sesión: ${error.message}`); // Mostrar error
                 });
         });
 
-        // Inicio de sesión con Google
+        // Manejar inicio de sesión con Google
         document.getElementById('google-login').addEventListener('click', () => {
             signInWithPopup(auth, googleProvider)
                 .then((result) => {
-                    const user = result.user;
-                    alert(`Bienvenido, ${user.displayName}`);
-                    window.location.href = `welcome.html?name=${user.displayName}`;
+                    const user = result.user; // Obtener usuario
+                    alert(`Bienvenido, ${user.displayName}`); // Mostrar nombre
+                    window.location.href = `welcome.html?name=${user.displayName}`; // Redirigir
                 })
                 .catch((error) => {
-                    alert(`Error: ${error.message}`);
+                    alert(`Error: ${error.message}`); // Mostrar error
                 });
         });
 
-        // Registro con número de teléfono
+        // Manejar registro con número de teléfono
         document.getElementById('phone-register').addEventListener('click', () => {
             const phoneNumber = document.getElementById('phone-number').value;
             const appVerifier = window.recaptchaVerifier;
@@ -149,15 +181,15 @@
             signInWithPhoneNumber(auth, phoneNumber, appVerifier)
                 .then((confirmationResult) => {
                     const code = prompt('Ingresa el código enviado a tu teléfono:');
-                    return confirmationResult.confirm(code);
+                    return confirmationResult.confirm(code); // Confirmar código
                 })
                 .then((result) => {
-                    const user = result.user;
-                    alert(`Bienvenido, ${user.phoneNumber}`);
-                    window.location.href = `welcome.html?name=${user.phoneNumber}`;
+                    const user = result.user; // Obtener usuario
+                    alert(`Bienvenido, ${user.phoneNumber}`); // Mostrar número
+                    window.location.href = `welcome.html?name=${user.phoneNumber}`; // Redirigir
                 })
                 .catch((error) => {
-                    alert(`Error: ${error.message}`);
+                    alert(`Error: ${error.message}`); // Mostrar error
                 });
         });
     </script>
